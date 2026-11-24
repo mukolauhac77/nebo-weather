@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100e1c">
+  <meta name="description" content="Актуальна погода, прогноз на тиждень і найкраща година для прогулянки.">
+  <title>Небо — прогноз погоди</title>
+  <link rel="icon" href="./assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="header">
+      <a class="brand" href="./" aria-label="Небо — на головну">
+        <span class="brand-icon" aria-hidden="true">☁</span>
+        <span>небо<span class="brand-dot">.</span></span>
+      </a>
+      <div class="header-actions">
+        <form class="search" id="search" role="search">
+          <label class="sr-only" for="city">Назва міста</label>
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="city" type="search" placeholder="Знайти місто" autocomplete="off" maxlength="80" aria-controls="results" aria-expanded="false" role="combobox" aria-autocomplete="list">
+          <div class="search-results" id="results" role="listbox" aria-label="Результати пошуку" hidden></div>
+          <p class="search-results search-message" id="search-message" role="status" hidden></p>
+        </form>
+        <button class="icon-button" type="button" id="locate" aria-label="Погода за моїм місцем" title="Моє місце"><span class="locate-icon" aria-hidden="true"></span></button>
+        <div class="units" role="group" aria-label="Одиниці температури">
+          <button type="button" data-unit="C" aria-pressed="true">°C</button>
+          <button type="button" data-unit="F" aria-pressed="false">°F</button>
+        </div>
+      </div>
+    </header>
+    <main>
+      <section class="hero" id="hero" aria-labelledby="location" aria-busy="true">
+        <div class="hero-content">
+          <p class="eyebrow" id="local-date">ПРОГНОЗ ПОГОДИ</p>
+          <h1 id="location">Київ</h1>
+          <p class="place" id="place">Україна</p>
+          <div class="current">
+            <span id="temperature" class="temperature">—</span>
+            <div id="current-description" class="current-description">
+              <span id="current-icon" class="weather-icon" aria-hidden="true"></span>
+              <p id="condition">Завантажуємо прогноз…</p>
+            </div>
+          </div>
+          <p class="range" id="range"></p>
+        </div>
+        <p class="weather-state" id="weather-state" hidden><span></span></p>
+      </section>
+      <div class="notice" id="notice" hidden>
+        <p id="status" role="status"></p>
+        <button id="retry" type="button" hidden>Спробувати ще раз</button>
+      </div>
+      <div class="dashboard">
+        <section class="card hours-card" aria-labelledby="hours-title">
+          <div class="card-heading"><span class="panel-icon" aria-hidden="true">◷</span><h2 id="hours-title">Погодинно</h2><span class="heading-note">24 години</span></div>
+          <div class="hours" id="hours" tabindex="0" aria-label="Погодинний прогноз, прокручується горизонтально"></div>
+        </section>
+        <section class="card week-card" aria-labelledby="week-title">
+          <div class="card-heading"><span class="panel-icon" aria-hidden="true">▦</span><h2 id="week-title">На тиждень</h2><span class="heading-note">7 днів</span></div>
+          <div id="week" class="week"></div>
+        </section>
+        <section class="card walk-card" aria-labelledby="walk-title">
+          <div class="card-heading"><span class="panel-icon walk-icon" aria-hidden="true">✧</span><h2 id="walk-title">Час для прогулянки</h2></div>
+          <div class="walk-content" id="walk"><p class="empty">Очікуємо на прогноз</p></div>
+        </section>
+        <section class="details" aria-labelledby="details-title">
+          <h2 id="details-title">Деталі погоди</h2>
+          <div id="details" class="details-grid"></div>
+        </section>
+      </div>
+    </main>
+    <footer>Дані прогнозу <a href="https://open-meteo.com/">Open-Meteo</a></footer>
+  </div>
+</body>
+</html>
