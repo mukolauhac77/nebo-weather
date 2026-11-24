@@ -49,7 +49,7 @@ a { color: inherit; }
   content: "";
   z-index: -3;
   background: url("./assets/carpathian-sky.jpg") center 57% / cover;
-  animation: sky-pan 24s ease-in-out infinite alternate;
+  animation: sky-pan 9s ease-in-out -3s infinite alternate;
   animation-play-state: var(--sky-play, paused);
 }
 .hero::after {
@@ -64,10 +64,12 @@ a { color: inherit; }
 .sky-effects::before {
   content: "";
   position: absolute;
-  inset: -15% -25%;
-  background: radial-gradient(ellipse at 68% 58%, #e5c5ff44, transparent 50%);
-  opacity: .46;
-  animation: sky-mist 13s ease-in-out infinite alternate;
+  inset: -15% -16%;
+  background:
+    radial-gradient(ellipse at 70% 51%, #c2b5ed83, transparent 34%),
+    radial-gradient(ellipse at 88% 65%, #e5bbca70, transparent 25%);
+  opacity: .53;
+  animation: sky-mist 8s ease-in-out -2s infinite alternate;
   animation-play-state: var(--sky-play, paused);
 }
 .hero[data-effect="fog"] .sky-effects::before {
@@ -100,18 +102,20 @@ a { color: inherit; }
 }
 .hero[data-effect="rain"] .sky-track { --drift: -72px; }
 .motion-button {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   position: absolute;
   z-index: 1;
   top: 14px;
   right: 14px;
-  width: 44px;
-  height: 44px;
-  padding: 0;
+  min-height: 44px;
+  padding: 0 12px;
   border: 1px solid #b3a0c694;
-  border-radius: 50%;
+  border-radius: 99px;
   background: #1b142ccf;
+  font-size: .875rem;
 }
 .motion-button:hover { background: #3c2e52; }
 .motion-symbol { width: 12px; height: 13px; border-inline: 3px solid currentColor; border-radius: 1px; }
@@ -124,20 +128,19 @@ a { color: inherit; }
   border-left: 10px solid currentColor;
 }
 @keyframes sky-pan {
-  from { transform: translate3d(-1%, .5%, 0) scale(1.07); }
-  to { transform: translate3d(2%, -1%, 0) scale(1.17); }
+  from { transform: translate3d(4%, 1.5%, 0) scale(1.13); }
+  to { transform: translate3d(-5%, -2%, 0) scale(1.22); }
 }
 @keyframes sky-mist {
-  from { transform: translate3d(-8%, 2%, 0); }
-  to { transform: translate3d(10%, -3%, 0); }
+  from { transform: translate3d(10%, 2%, 0); }
+  to { transform: translate3d(-15%, -5%, 0); }
 }
 @keyframes sky-fall {
   from { transform: translate3d(0, 0, 0); }
   to { transform: translate3d(var(--drift, 26px), calc(100% + 30px), 0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero::before, .sky-effects::before, .sky-track { animation: none; }
-  .sky-track, .motion-button { display: none; }
+  .hero:not([data-motion="running"]) .sky-track { display: none; }
 }
 .hero-content { padding: 27px clamp(26px,5vw,59px) 30px; max-width: 100%; }
 .eyebrow { margin: 0 0 9px; color: #e2d3fd; font-size: .875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -212,7 +215,7 @@ footer a { text-underline-offset: 3px; }
   .hero { min-height: 310px; }
   .hero::before { background-position: 57% center; }
   .hero::after { background: linear-gradient(90deg,#160e29ef,#1a122b94 52%,#22163044), linear-gradient(0deg,#190e2990,transparent 55%); }
-  .hero-content { padding: 44px 18px 57px; }
+  .hero-content { padding: 55px 18px 57px; }
   .sky-track:nth-child(n + 19) { display: none; }
   .current { gap: 12px; }
   .temperature { font-size: clamp(3.65rem,17vw,5.5rem); }

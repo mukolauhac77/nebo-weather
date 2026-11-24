@@ -7,8 +7,8 @@
   <meta name="description" content="Актуальна погода, прогноз на тиждень і найкраща година для прогулянки.">
   <title>Небо — прогноз погоди</title>
   <link rel="icon" href="./assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="./styles.css">
-  <script type="module" src="./app.mjs"></script>
+  <link rel="stylesheet" href="./styles.css?v=sky-motion-2">
+  <script type="module" src="./app.mjs?v=sky-motion-2"></script>
 </head>
 <body>
   <div class="shell">
@@ -35,8 +35,9 @@
     <main>
       <section class="hero" id="hero" aria-labelledby="location" aria-busy="true">
         <div class="sky-effects" id="sky-effects" aria-hidden="true"></div>
-        <button class="motion-button" id="sky-motion" type="button" aria-label="Анімація неба" aria-pressed="true" title="Призупинити анімацію" hidden>
+        <button class="motion-button" id="sky-motion" type="button" aria-label="Анімація неба" aria-pressed="false" title="Увімкнути анімацію" hidden>
           <span class="motion-symbol" aria-hidden="true"></span>
+          <span>Анімація</span>
         </button>
         <div class="hero-content">
           <p class="eyebrow" id="local-date">ПРОГНОЗ ПОГОДИ</p>

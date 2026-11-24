@@ -1,7 +1,7 @@
 import {
   forecastUrl, hourLabel, isForecast, kyiv, localDateLabel, skyEffect, temperature,
   unpackSeries, upcomingHours, walkWindow, weatherCondition,
-} from './weather.mjs'
+} from './weather.mjs?v=sky-motion-2'
 
 const element = id => document.getElementById(id)
 const cityInput = element('city')
@@ -11,6 +11,8 @@ const locate = element('locate')
 const hero = element('hero')
 const skyEffects = element('sky-effects')
 const motionButton = element('sky-motion')
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+let motionChoice = read('nebo:motion')
 const units = [...document.querySelectorAll('[data-unit]')]
 const savedPlace = read('nebo:place')
 let selectedPlace = validPlace(savedPlace) ? savedPlace : kyiv
@@ -63,7 +65,11 @@ function notice(message, retry = false) {
 function setSkyMotion(enabled) {
   hero.dataset.motion = enabled ? 'running' : 'paused'
   motionButton.setAttribute('aria-pressed', String(enabled))
-  motionButton.title = enabled ? 'Призупинити анімацію' : 'Відтворити анімацію'
+  motionButton.title = enabled ? 'Призупинити анімацію' : 'Увімкнути анімацію'
+}
+
+function syncSkyMotion() {
+  setSkyMotion(typeof motionChoice === 'boolean' ? motionChoice : !reducedMotion.matches)
 }
 
 function drawSky(code) {
@@ -387,11 +393,12 @@ locate.addEventListener('click', () => {
 })
 
 motionButton.addEventListener('click', () => {
-  const enabled = hero.dataset.motion !== 'running'
-  setSkyMotion(enabled)
-  save('nebo:motion', enabled)
+  motionChoice = hero.dataset.motion !== 'running'
+  save('nebo:motion', motionChoice)
+  syncSkyMotion()
 })
-setSkyMotion(read('nebo:motion') !== false)
+reducedMotion.addEventListener('change', syncSkyMotion)
+syncSkyMotion()
 motionButton.hidden = false
 for (const button of units) button.addEventListener('click', () => setUnits(button.dataset.unit))
 setUnits(unit)
