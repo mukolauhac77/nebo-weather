@@ -44,9 +44,101 @@ a { color: inherit; }
 .units button { min-width: 34px; min-height: 35px; border-radius: 9px; background: transparent; border: 0; color: var(--muted); font-size: .875rem; }
 .units [aria-pressed="true"] { background: #d7c5ff; color: #261741; font-weight: 750; }
 .hero { position: relative; display: flex; min-height: 335px; align-items: center; isolation: isolate; background: #2c2246; overflow: hidden; border-radius: 28px; border: 1px solid #6b547f; }
-.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg,#160e29eb 0%,#1a122bd0 30%,#22163020 80%), linear-gradient(0deg,#190e2970,transparent 55%), url("./assets/carpathian-sky.jpg") center 57% / cover; }
+.hero::before, .hero::after, .sky-effects { position: absolute; inset: 0; pointer-events: none; }
+.hero::before {
+  content: "";
+  z-index: -3;
+  background: url("./assets/carpathian-sky.jpg") center 57% / cover;
+  animation: sky-pan 24s ease-in-out infinite alternate;
+  animation-play-state: var(--sky-play, paused);
+}
+.hero::after {
+  content: "";
+  z-index: -1;
+  background: linear-gradient(90deg,#160e29eb 0%,#1a122bd0 30%,#22163020 80%), linear-gradient(0deg,#190e2970,transparent 55%);
+}
+.hero[data-motion="running"] { --sky-play: running; }
 .hero[data-sky="night"]::before { filter: brightness(.82) saturate(.88) hue-rotate(9deg); }
 .hero[data-sky="wet"]::before { filter: saturate(.52) hue-rotate(9deg); }
+.sky-effects { z-index: -2; }
+.sky-effects::before {
+  content: "";
+  position: absolute;
+  inset: -15% -25%;
+  background: radial-gradient(ellipse at 68% 58%, #e5c5ff44, transparent 50%);
+  opacity: .46;
+  animation: sky-mist 13s ease-in-out infinite alternate;
+  animation-play-state: var(--sky-play, paused);
+}
+.hero[data-effect="fog"] .sky-effects::before {
+  background: radial-gradient(ellipse at 65% 72%, #d8dbffb5, transparent 46%);
+  opacity: .82;
+}
+.sky-track {
+  position: absolute;
+  inset-block: 0;
+  left: var(--left);
+  width: var(--size);
+  animation: sky-fall var(--duration) linear var(--delay) infinite;
+  animation-play-state: var(--sky-play, paused);
+}
+.sky-track::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  width: 100%;
+  height: var(--size);
+  background: #f1edff;
+  border-radius: 50%;
+  opacity: var(--opacity);
+}
+.hero[data-effect="rain"] .sky-track::before {
+  height: calc(var(--size) * 14);
+  background: linear-gradient(transparent,#d6e5ff);
+  border-radius: 5px;
+  transform: rotate(12deg);
+}
+.hero[data-effect="rain"] .sky-track { --drift: -72px; }
+.motion-button {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  right: 14px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #b3a0c694;
+  border-radius: 50%;
+  background: #1b142ccf;
+}
+.motion-button:hover { background: #3c2e52; }
+.motion-symbol { width: 12px; height: 13px; border-inline: 3px solid currentColor; border-radius: 1px; }
+.motion-button[aria-pressed="false"] .motion-symbol {
+  width: 0;
+  height: 0;
+  margin-left: 3px;
+  border: 0;
+  border-block: 7px solid transparent;
+  border-left: 10px solid currentColor;
+}
+@keyframes sky-pan {
+  from { transform: translate3d(-1%, .5%, 0) scale(1.07); }
+  to { transform: translate3d(2%, -1%, 0) scale(1.17); }
+}
+@keyframes sky-mist {
+  from { transform: translate3d(-8%, 2%, 0); }
+  to { transform: translate3d(10%, -3%, 0); }
+}
+@keyframes sky-fall {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(var(--drift, 26px), calc(100% + 30px), 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero::before, .sky-effects::before, .sky-track { animation: none; }
+  .sky-track, .motion-button { display: none; }
+}
 .hero-content { padding: 27px clamp(26px,5vw,59px) 30px; max-width: 100%; }
 .eyebrow { margin: 0 0 9px; color: #e2d3fd; font-size: .875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 h1 { margin: 0; font-size: clamp(2rem,5vw,3.05rem); line-height: 1.04; letter-spacing: -.045em; overflow-wrap: anywhere; }
@@ -118,8 +210,10 @@ footer a { text-underline-offset: 3px; }
   .search { width: 100%; }
   .search-results { left: 0; right: auto; }
   .hero { min-height: 310px; }
-  .hero::before { background-position: 57% center; background-image: linear-gradient(90deg,#160e29ef,#1a122b94 52%,#22163044), linear-gradient(0deg,#190e2990,transparent 55%), url("./assets/carpathian-sky.jpg"); }
-  .hero-content { padding: 25px 18px 57px; }
+  .hero::before { background-position: 57% center; }
+  .hero::after { background: linear-gradient(90deg,#160e29ef,#1a122b94 52%,#22163044), linear-gradient(0deg,#190e2990,transparent 55%); }
+  .hero-content { padding: 44px 18px 57px; }
+  .sky-track:nth-child(n + 19) { display: none; }
   .current { gap: 12px; }
   .temperature { font-size: clamp(3.65rem,17vw,5.5rem); }
   .current-description { font-size: .9rem; }

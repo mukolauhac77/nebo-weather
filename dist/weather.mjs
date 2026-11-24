@@ -39,6 +39,14 @@ export function weatherCondition(code, isDay = true) {
   return { name, icon: !isDay && code <= 1 && code !== null ? '🌙' : icon }
 }
 
+export function skyEffect(code) {
+  if (code === 45 || code === 48) return 'fog'
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return 'snow'
+  if (Number.isFinite(code) && ((code >= 51 && code <= 67) ||
+      (code >= 80 && code <= 82) || code >= 95)) return 'rain'
+  return 'clouds'
+}
+
 export function temperature(value, unit = 'C') {
   if (!Number.isFinite(value)) return '—'
   const rounded = Math.round(unit === 'F' ? value * 1.8 + 32 : value)

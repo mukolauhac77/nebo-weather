@@ -1,5 +1,5 @@
 import {
-  forecastUrl, hourLabel, isForecast, kyiv, localDateLabel, temperature,
+  forecastUrl, hourLabel, isForecast, kyiv, localDateLabel, skyEffect, temperature,
   unpackSeries, upcomingHours, walkWindow, weatherCondition,
 } from './weather.mjs'
 
@@ -8,6 +8,9 @@ const cityInput = element('city')
 const results = element('results')
 const searchMessage = element('search-message')
 const locate = element('locate')
+const hero = element('hero')
+const skyEffects = element('sky-effects')
+const motionButton = element('sky-motion')
 const units = [...document.querySelectorAll('[data-unit]')]
 const savedPlace = read('nebo:place')
 let selectedPlace = validPlace(savedPlace) ? savedPlace : kyiv
@@ -57,6 +60,32 @@ function notice(message, retry = false) {
   element('notice').hidden = !message
 }
 
+function setSkyMotion(enabled) {
+  hero.dataset.motion = enabled ? 'running' : 'paused'
+  motionButton.setAttribute('aria-pressed', String(enabled))
+  motionButton.title = enabled ? 'Призупинити анімацію' : 'Відтворити анімацію'
+}
+
+function drawSky(code) {
+  const next = skyEffect(code)
+  if (hero.dataset.effect === next) return
+  hero.dataset.effect = next
+
+  const count = next === 'rain' ? 30 : next === 'snow' ? 24 : 0
+  const particles = Array.from({ length: count }, (_, index) => {
+    const track = create('span', 'sky-track')
+    const size = next === 'snow' ? 2 + (index % 5) * .65 : 1 + (index % 4) * .25
+    const duration = next === 'snow' ? 5.5 + (index % 8) * .6 : .9 + (index % 8) * .09
+    track.style.setProperty('--left', (index * 47 % 101) + '%')
+    track.style.setProperty('--size', size + 'px')
+    track.style.setProperty('--duration', duration + 's')
+    track.style.setProperty('--delay', -((index * 37 % 101) / 101) * duration + 's')
+    track.style.setProperty('--opacity', .24 + (index % 6) * .1)
+    return track
+  })
+  skyEffects.replaceChildren(...particles)
+}
+
 function clearForecast(place, message) {
   displayed = null
   element('location').textContent = place.name
@@ -66,7 +95,8 @@ function clearForecast(place, message) {
   element('current-icon').textContent = ''
   element('condition').textContent = message
   element('range').textContent = ''
-  element('hero').removeAttribute('data-sky')
+  hero.removeAttribute('data-sky')
+  drawSky()
   element('weather-state').hidden = true
   for (const id of ['hours', 'week', 'walk', 'details']) {
     element(id).replaceChildren(create('p', 'empty', 'Очікуємо на прогноз'))
@@ -177,7 +207,8 @@ function render() {
   element('current-icon').textContent = condition.icon
   element('condition').textContent = condition.name
   element('range').textContent = `Макс. ${temperature(daily[0].temperature_2m_max, unit)}  ·  Мін. ${temperature(daily[0].temperature_2m_min, unit)}`
-  element('hero').dataset.sky = current.is_day === 0 ? 'night' : current.weather_code >= 51 ? 'wet' : 'day'
+  hero.dataset.sky = current.is_day === 0 ? 'night' : current.weather_code >= 51 ? 'wet' : 'day'
+  drawSky(current.weather_code)
   const state = element('weather-state')
   state.hidden = false
   state.dataset.mode = stale ? 'cache' : 'live'
@@ -206,7 +237,6 @@ async function loadForecast(place) {
   const changed = displayed?.place.latitude !== place.latitude || displayed?.place.longitude !== place.longitude
   if (changed) clearForecast(place, 'Завантажуємо прогноз…')
   selectedPlace = place
-  const hero = element('hero')
   hero.setAttribute('aria-busy', 'true')
   notice('')
 
@@ -356,6 +386,13 @@ locate.addEventListener('click', () => {
   }, { timeout: 9000, maximumAge: 3 * 60 * 1000 })
 })
 
+motionButton.addEventListener('click', () => {
+  const enabled = hero.dataset.motion !== 'running'
+  setSkyMotion(enabled)
+  save('nebo:motion', enabled)
+})
+setSkyMotion(read('nebo:motion') !== false)
+motionButton.hidden = false
 for (const button of units) button.addEventListener('click', () => setUnits(button.dataset.unit))
 setUnits(unit)
 loadForecast(selectedPlace)

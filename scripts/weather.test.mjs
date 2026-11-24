@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFile, stat } from 'node:fs/promises'
 import { test } from 'node:test'
 import {
-  forecastUrl, isForecast, kyiv, localDateLabel, temperature,
+  forecastUrl, isForecast, kyiv, localDateLabel, skyEffect, temperature,
   unpackSeries, upcomingHours, walkWindow, weatherCondition,
   currentFields, hourlyFields, dailyFields,
 } from '../dist/weather.mjs'
@@ -29,6 +29,13 @@ test('temperatures, nighttime icons and local forecast dates', () => {
   assert.equal(weatherCondition(0, false).icon, '🌙')
   assert.equal(weatherCondition(95, false).icon, '⛈️')
   assert.equal(localDateLabel('2026-11-24T23:00', { weekday: 'short' }), 'вт')
+})
+
+test('sky animation follows the reported weather', () => {
+  assert.deepEqual(
+    [null, 0, 3, 45, 61, 66, 71, 80, 85, 95].map(skyEffect),
+    ['clouds', 'clouds', 'clouds', 'fog', 'rain', 'rain', 'snow', 'rain', 'snow', 'rain'],
+  )
 })
 
 test('weekly forecast request, schema and current-hour alignment', () => {
